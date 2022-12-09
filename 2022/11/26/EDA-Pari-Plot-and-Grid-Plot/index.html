@@ -28,12 +28,13 @@
 <meta property="og:description" content="This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
 <meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/iris-dataset.png">
 <meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/raw_pic.jpg">
 <meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
 <meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/grid-plot.jpg">
 <meta property="article:published_time" content="2022-11-26T15:51:00.000Z">
-<meta property="article:modified_time" content="2022-12-09T16:30:20.430Z">
+<meta property="article:modified_time" content="2022-12-09T16:35:18.666Z">
 <meta property="article:author" content="Jay Wang">
 <meta property="article:tag" content="EDA">
 <meta name="twitter:card" content="summary">
@@ -189,7 +190,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-09 16:30:20" itemprop="dateModified" datetime="2022-12-09T16:30:20Z">2022-12-09</time>
+                <time title="Modified: 2022-12-09 16:35:18" itemprop="dateModified" datetime="2022-12-09T16:35:18Z">2022-12-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -214,14 +215,18 @@
       
         <p>This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two variables, and it is an excellent method to identify trends for follow-up analysis.</p>
 <center>
-    <img src="EDA-pariplot-and-gridplot/pair-plot.jpg" width=80% >
+    <img src="./EDA-pariplot-and-gridplot/pair-plot.jpg" width=80% >
 </center>
 
 <span id="more"></span>
 
 <h2 id="Pair-Plot-in-seaborn"><a href="#Pair-Plot-in-seaborn" class="headerlink" title="Pair Plot in seaborn"></a>Pair Plot in seaborn</h2><p>First of all, let’s take a glance at the dataset. I am using pandas to read the iris dataset, which contains three classes of 50 instances each, where each class refers to a type of iris plant. </p>
 <center>
-  <img src="EDA-pariplot-and-gridplot/iris-dataset.png", width=80%>
+    <img src="./EDA-pariplot-and-gridplot/pair-plot.jpg" width=80% >
+</center>
+
+<center>
+  <img src="./EDA-pariplot-and-gridplot/iris-dataset.png", width=80%>
 </center>
 
 <blockquote>
@@ -232,7 +237,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">data = pd.read_csv(<span class="string">&#x27;dataset/iris_csv.csv&#x27;</span>)</span><br><span class="line">sns.pairplot(data)</span><br></pre></td></tr></table></figure>
 
 <center>
-  <img src="EDA-pariplot-and-gridplot/raw_pic.jpg", width=80%>
+  <img src="./EDA-pariplot-and-gridplot/raw_pic.jpg", width=80%>
 </center>
 
 <p>The pairs plot builds on two basic figures, the histogram and the scatter plot. The histogram on the diagonal allows us to see the distribution of a single variable. At the same time, the scatter plots on the upper and lower triangles show the relationship (or lack thereof) between two variables. We see that petal length and width are positively correlated, indicating that flowers with longer petal lengths tend to hold wider petal widths. </p>
@@ -240,7 +245,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.pairplot(data, hue=<span class="string">&#x27;class&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <center>
-  <img src="EDA-pariplot-and-gridplot/pair-plot.jpg", width=80%>
+  <img src="./EDA-pariplot-and-gridplot/pair-plot.jpg", width=80%>
 </center>
 
 
@@ -256,7 +261,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Map a histogram to the diagonal</span></span><br><span class="line">grid = grid.map_diag(plt.hist, bins=<span class="number">10</span>, color=<span class="string">&#x27;darkred&#x27;</span>, edgecolor = <span class="string">&#x27;k&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Map a density plot to the lower triangle</span></span><br><span class="line">grid = grid.map_lower(sns.kdeplot, color=<span class="string">&#x27;darkred&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <center>
-      <img src="EDA-pariplot-and-gridplot/grid-plot.jpg", width=80%>
+      <img src="./EDA-pariplot-and-gridplot/grid-plot.jpg", width=80%>
 </center>
 
 <p>The real benefits of using the PairGrid class come when we want to create custom functions to map different information onto the plot.</p>
