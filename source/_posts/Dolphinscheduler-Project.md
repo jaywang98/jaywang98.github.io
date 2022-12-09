@@ -2,7 +2,9 @@
 title: Dolphinscheduler Project
 date: 2022-08-21 15:08:37
 tags:
-    - Big Data
+   - Big Data
+categories:
+   - Data Engineering
 ---
 
 This purpose of this repo is to record some tricks and solutions during the process of the ds-cluster building.
