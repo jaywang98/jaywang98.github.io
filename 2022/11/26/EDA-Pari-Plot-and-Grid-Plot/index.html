@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EDA: Pari Plot and Grid Plot">
+<meta property="og:url" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/_posts/EDA-pariplot-and-gridplot/pair-plot.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/iris-dataset.png">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/raw_pic.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/grid-plot.jpg">
+<meta property="article:published_time" content="2022-11-26T15:51:00.000Z">
+<meta property="article:modified_time" content="2022-12-09T16:38:27.859Z">
+<meta property="article:author" content="Jay Wang">
+<meta property="article:tag" content="EDA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/_posts/EDA-pariplot-and-gridplot/pair-plot.jpg">
+
+<link rel="canonical" href="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>EDA: Pari Plot and Grid Plot | Jay's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jay's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">饥于学识，忠于技术。<br> Hungry For Knowledge,<br>Loyal To Technology.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Jay Wang">
+      <meta itemprop="description" content="This is a pure blog to record Mars' private projects, study summaries and career planning.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          EDA: Pari Plot and Grid Plot
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-11-26 15:51:00" itemprop="dateCreated datePublished" datetime="2022-11-26T15:51:00Z">2022-11-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-09 16:38:27" itemprop="dateModified" datetime="2022-12-09T16:38:27Z">2022-12-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/DS/" itemprop="url" rel="index"><span itemprop="name">DS</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two variables, and it is an excellent method to identify trends for follow-up analysis.</p>
+<center>
+    <img src="_posts/EDA-pariplot-and-gridplot/pair-plot.jpg" width=80% >
+</center>
+
+<span id="more"></span>
+
+<h2 id="Pair-Plot-in-seaborn"><a href="#Pair-Plot-in-seaborn" class="headerlink" title="Pair Plot in seaborn"></a>Pair Plot in seaborn</h2><p>First of all, let’s take a glance at the dataset. I am using pandas to read the iris dataset, which contains three classes of 50 instances each, where each class refers to a type of iris plant. </p>
+<center>
+  <img src="EDA-pariplot-and-gridplot/iris-dataset.png", width=80%>
+</center>
+
+<blockquote>
+<p>The *<strong>Iris* flower data set</strong> or <strong>Fisher’s *Iris* data set</strong> is a <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multivariate_statistics">multivariate</a> <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Data_set">data set</a> used and made famous by the British <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Statistician">statistician</a> and <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Biologist">biologist</a> <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ronald_Fisher">Ronald Fisher</a> in his 1936 paper <em>The use of multiple measurements in taxonomic problems</em> as an example of <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Linear_discriminant_analysis">linear discriminant analysis</a>.</p>
+<p>The data set consists of 50 samples from each of three species of <em>Iris</em> (<em><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Iris_setosa">Iris setosa</a></em>, <em><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Iris_virginica">Iris virginica</a></em> and <em><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Iris_versicolor">Iris versicolor</a></em>). Four <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Features_(pattern_recognition)">features</a> were measured from each sample: the length and the width of the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Sepal">sepals</a> and <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Petal">petals</a>, in centimeters. Based on the combination of these four features, Fisher developed a linear discriminant model to distinguish the species from each other. Fisher’s paper was published in the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Annals_of_Eugenics">Annals of Eugenics</a> and includes discussion of the contained techniques’ applications to the field of <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Phrenology">phrenology</a>.[<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Iris_flower_data_set#cite_note-fisher36-1">1]</a></p>
+</blockquote>
+<p>The default pairs plot in seaborn only plots numerical columns, although later, we will use the categorical variables for coloring. Creating the default pairs plot is simple: we load in the seaborn library and call the <code>pairplot</code> function, passing our dataframe to it:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">data = pd.read_csv(<span class="string">&#x27;dataset/iris_csv.csv&#x27;</span>)</span><br><span class="line">sns.pairplot(data)</span><br></pre></td></tr></table></figure>
+
+<center>
+  <img src="EDA-pariplot-and-gridplot/raw_pic.jpg", width=80%>
+</center>
+
+<p>The pairs plot builds on two basic figures, the histogram and the scatter plot. The histogram on the diagonal allows us to see the distribution of a single variable. At the same time, the scatter plots on the upper and lower triangles show the relationship (or lack thereof) between two variables. We see that petal length and width are positively correlated, indicating that flowers with longer petal lengths tend to hold wider petal widths. </p>
+<p>We can make it more valuable by coloring the figures based on a categorical variable such as class. All we need to do is use the <code>hue</code> keyword in the <code>sns.pairplot</code> function call:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.pairplot(data, hue=<span class="string">&#x27;class&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<center>
+  <img src="EDA-pariplot-and-gridplot/pair-plot.jpg", width=80%>
+</center>
+
+
+
+<p>Now we see that Virginia tends to have the most extended petal length and widest petal width. And also, we can find these parameters’ distribution is normally distributed, which gives a more thorough representation compared to the non-classed pair plot.</p>
+<h2 id="PairGrid-in-seaborn"><a href="#PairGrid-in-seaborn" class="headerlink" title="PairGrid in seaborn"></a>PairGrid in seaborn</h2><p>In contrast to the <code>sns.pairplot</code> function, <code>sns.pairgrid</code> is a class that does not automatically fill in the plots for us. Instead, we create a class instance and map specific functions to the different sections of the grid. To create a PairGrid example with our data, we use the following code, which also limits the variables we will show:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create an instance of the PairGrid class.</span></span><br><span class="line">grid = sns.PairGrid(data)</span><br></pre></td></tr></table></figure>
+
+<p>If we were to display this, we would get a blank graph because we have not mapped any functions to the grid sections. There are three grid sections to fill in for a PairGrid: the upper triangle, the lower triangle, and the diagonal. To map plots to these sections, we use the <code>grid.map </code> method on the section. For example, to map a scatter plot to the upper triangle, we use the following:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Map a scatter plot to the upper triangle</span></span><br><span class="line">grid = grid.map_upper(plt.scatter, color = <span class="string">&#x27;darkred&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>The <code>map_upper</code> method takes in any function that accepts two arrays of variables (such as <code>plt.scatter</code>)and associated keywords (such as <code>color</code>). The <code>map_lower</code> process is the same but fills in the lower triangle of the grid. The <code>map_diag</code> is slightly different because it takes in a function that accepts a single array (remember, the diagonal shows only one variable).</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Map a histogram to the diagonal</span></span><br><span class="line">grid = grid.map_diag(plt.hist, bins=<span class="number">10</span>, color=<span class="string">&#x27;darkred&#x27;</span>, edgecolor = <span class="string">&#x27;k&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Map a density plot to the lower triangle</span></span><br><span class="line">grid = grid.map_lower(sns.kdeplot, color=<span class="string">&#x27;darkred&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<center>
+      <img src="EDA-pariplot-and-gridplot/grid-plot.jpg", width=80%>
+</center>
+
+<p>The real benefits of using the PairGrid class come when we want to create custom functions to map different information onto the plot.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Pairs plots are a powerful tool to explore distributions and relationships in a dataset quickly. Seaborn provides a simple default method for making pair plots that can be customized and extended through the Pair Grid class. In a data analysis project, a significant portion of the value often comes not in the flashy machine learning but in the straightforward data visualization. A pairs plot provides a comprehensive first look at our data and is a great starting point in data analysis projects.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/EDA/" rel="tag"># EDA</a>
+          </div>
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pair-Plot-in-seaborn"><span class="nav-number">1.</span> <span class="nav-text">Pair Plot in seaborn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PairGrid-in-seaborn"><span class="nav-number">2.</span> <span class="nav-text">PairGrid in seaborn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">3.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jay Wang"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Jay Wang</p>
+  <div class="site-description" itemprop="description">This is a pure blog to record Mars' private projects, study summaries and career planning.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jay Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
