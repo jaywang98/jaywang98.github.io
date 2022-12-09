@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这个私人博客的搭建是基于Github Page创建最基础的个人静态网站，Hexo则是一个快速、简洁且高效的博客框架，利用Markdown进行文章的解析，NexT是其中的一种主题theme，其拓展性优秀，后期能基于该框架与主题进行个性化的修改。基于Github + Hexo + NexT模式的博客在管理方便，实现本地-远程简单部署的同时，也保证了博客网页的美观与整洁。 本文将从以下几个部分来记录该博">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build A Private Github Blog Based On Hexo">
+<meta property="og:url" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="这个私人博客的搭建是基于Github Page创建最基础的个人静态网站，Hexo则是一个快速、简洁且高效的博客框架，利用Markdown进行文章的解析，NexT是其中的一种主题theme，其拓展性优秀，后期能基于该框架与主题进行个性化的修改。基于Github + Hexo + NexT模式的博客在管理方便，实现本地-远程简单部署的同时，也保证了博客网页的美观与整洁。 本文将从以下几个部分来记录该博">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/build_repository.png">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/ssh-key.png">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/file_structure.png">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/hexo_server.png">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/localhost.png">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/deploy.png">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/gitalk1.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/gitalk2.jpg">
+<meta property="article:published_time" content="2022-08-21T12:37:14.000Z">
+<meta property="article:modified_time" content="2022-12-09T16:51:00.234Z">
+<meta property="article:author" content="Jay Wang">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/build_repository.png">
+
+<link rel="canonical" href="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Build A Private Github Blog Based On Hexo | Jay's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jay's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">饥于学识，忠于技术。<br> Hungry For Knowledge,<br>Loyal To Technology.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Jay Wang">
+      <meta itemprop="description" content="This is a pure blog to record Mars' private projects, study summaries and career planning.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Build A Private Github Blog Based On Hexo
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-08-21 12:37:14" itemprop="dateCreated datePublished" datetime="2022-08-21T12:37:14Z">2022-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-09 16:51:00" itemprop="dateModified" datetime="2022-12-09T16:51:00Z">2022-12-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Blog/" itemprop="url" rel="index"><span itemprop="name">Blog</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这个私人博客的搭建是基于Github Page创建最基础的个人静态网站，Hexo则是一个快速、简洁且高效的博客框架，利用Markdown进行文章的解析，NexT是其中的一种主题theme，其拓展性优秀，后期能基于该框架与主题进行个性化的修改。基于Github + Hexo + NexT模式的博客在管理方便，实现本地-远程简单部署的同时，也保证了博客网页的美观与整洁。</p>
+<p>本文将从以下几个部分来记录该博客的搭建:</p>
+<pre><code>- 项目构建及其部署
+- 配置文件功能解析
+- 基于该框架主题的DIY
+- 难点与收获
+</code></pre>
+<span id="more"></span>
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​		度过了迷茫的半年，终于摸清楚了自己未来职业的方向，不再畏畏缩缩，要勇于去拼搏，去争取机会。在接下来的5年会是我未来非常重要的一段时光，实习、研究生、工作等等，每一步得需要万分的努力才能一步一个台阶的往上爬。所以我想创捷属于自己的blog，来记录自己未来几年的自己在技术、项目、职场等方面的一些心得与体会。之前也有类似的想法，但是经常就是做到一半中途而废。这次我是想认真的经营自己blog，不断的督促自己学习进步。同时blog也利于自己对过去经历进行记录与复盘，查漏补缺更进一步。</p>
+<p>​		这个私人博客的搭建是基于Github Page创建最基础的个人静态网站，Hexo则是一个快速、简洁且高效的博客框架，利用Markdown进行文章的解析，NexT是其中的一种主题theme，其拓展性优秀，后期能基于该框架与主题进行个性化的修改。基于Github + Hexo + NexT模式的博客在管理方便，本地-远程简单部署的同时，也保证了博客网页的美观与整洁。</p>
+<p>​		本文将从以下几个部分来记录该博客的搭建:</p>
+<ul>
+<li>项目构建及其部署</li>
+<li>配置文件功能解析</li>
+<li>基于该框架主题的DIY</li>
+<li>难点与收获</li>
+</ul>
+<p>​		个人链接: </p>
+<blockquote>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/wjmars98">Mars’ Github Home</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://wjmars98.github.io/">Mars’ Blog Home Page</a></p>
+</li>
+</ol>
+</blockquote>
+<h1 id="项目构建及其部署"><a href="#项目构建及其部署" class="headerlink" title="项目构建及其部署"></a>项目构建及其部署</h1><h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><p>​		该博客主要是利用Github为其每个用户提供的Github Pages服务，允许用户搭建一个静态网站。所以首先需要Github上构建名为:{username}.github.io的仓库，其名字必须由“.github.io”结尾。同时为了后续的操作便利，<a target="_blank" rel="noopener" href="https://docs.github.com/cn/authentication/connecting-to-github-with-ssh/about-ssh">需要配置本地与Github的ssh连接</a>。</p>
+<p>​		同时还需安装Node.js，Hexo。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># node.js</span></span><br><span class="line"><span class="comment"># download from https://nodejs.org/zh-cn/download/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Hexo 安装</span></span><br><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+
+
+<center>
+    <img src="build_repository.png" width=80%  >
+</center>
+
+
+
+<center>
+     <img src="ssh-key.png" width=80%  >
+</center>
+
+
+
+<h2 id="项目初始及本地搭建"><a href="#项目初始及本地搭建" class="headerlink" title="项目初始及本地搭建"></a>项目初始及本地搭建</h2><p>​		首先, 需要创建项目，利用指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hexo init &#123;name&#125;</span></span><br><span class="line"><span class="comment"># 我的项目名为wjmars98</span></span><br><span class="line">hexo init wjmars98</span><br></pre></td></tr></table></figure>
+
+<p>在wjmars98文件夹下面出现Hexo的初始化文件，各个文件的具体细节下一章再展开。</p>
+<center>
+     <img src="file_structure.png" width=80%  >
+</center>
+
+<p>​		第二，需要将Hexo编译成HTML文件，调用指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编译形成HTML文件</span></span><br><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>输出结果里面包含了 js、css、font 等内容，处在了项目根目录下的 public 文件夹下面，随后利用Hexo提供的Server服务，将其在本地运行起来</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动hexo服务器</span></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<p>随后可以在本地4000端口查看博客站点，如下所示,其中图例是已经选用next的情况。</p>
+<center>
+     <img src="hexo_server.png" width=80%  >
+</center>
+
+
+
+<center>
+     <img src="localhost.png" width=80%  >
+</center>
+
+
+
+<h2 id="项目部在Github-Page上的部署"><a href="#项目部在Github-Page上的部署" class="headerlink" title="项目部在Github Page上的部署"></a>项目部在Github Page上的部署</h2><p>​		为了便利后面的操作，我们将部署的shell脚本写在 <em>deploy.sh</em> 的脚本文件上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># deploy.sh 文件</span></span><br><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>利用 <em>sh deploy.sh</em> 指令就能完成部署操作。</p>
+<p>​		在部署之前，我们还需要修改部署文件细节。打开根目录下的 _config.yml 文件，找到 Deployment 这个地方，把刚才新建的 Repository 的地址贴过来，然后指定分支为 master 分支，最终修改为如下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/deployment.html</span></span><br><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  <span class="comment"># 替换成个人github上的git地址</span></span><br><span class="line">  repo: &#123;git repo ssh address&#125;</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<p>还需安装支持 Git 的部署插件，名字叫做 hexo-deployer-git，然后才能顺利部署到Github上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 插件安装</span></span><br><span class="line">npm install hexo-deployer-git --save</span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署命令</span></span><br><span class="line">hexo deploy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果不按照会报错</span></span><br><span class="line"><span class="comment"># Deployer not found: git</span></span><br></pre></td></tr></table></figure>
+
+<center>
+     <img src="deploy.png" width=80%  >
+</center>
+
+<p>​		此时打开<a target="_blank" rel="noopener" href="https://wjmars98.github.io/">https://wjmars98.github.io</a> 便可以打开网站。</p>
+<h1 id="配置文件功能解析"><a href="#配置文件功能解析" class="headerlink" title="配置文件功能解析"></a>配置文件功能解析</h1><p>​		在第二章中，我们初步完成了hexo地搭建以及在Github Page上地部署，文件夹为wjmars98，本章将对该文件夹下地配置文件进行详细解析。	</p>
+<p>​		首先是wjmars98文件夹的文件树:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml <span class="comment"># 网站的 配置 信息，您可以在此配置大部分的参数</span></span><br><span class="line">├── package.json <span class="comment"># 应用程序的信息。</span></span><br><span class="line">├── scaffolds <span class="comment"># 模版 文件夹。当您新建文章时，Hexo 会根据 scaffold 来建立文件。</span></span><br><span class="line">├── <span class="built_in">source</span> <span class="comment"># 资源文件夹是存放用户资源的地方。</span></span><br><span class="line">|   ├── _drafts	<span class="comment"># 草稿</span></span><br><span class="line">|   └── _posts <span class="comment"># 文章</span></span><br><span class="line">└── themes <span class="comment"># 主题 文件夹。Hexo 会根据主题来生成静态页面。</span></span><br></pre></td></tr></table></figure>
+
+<p>​		我们可以在_config.yml中修改大部分配置。</p>
+<h2 id="Site"><a href="#Site" class="headerlink" title="Site"></a>Site</h2><table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>title</code></td>
+<td align="left">网站标题</td>
+</tr>
+<tr>
+<td align="left"><code>subtitle</code></td>
+<td align="left">网站副标题</td>
+</tr>
+<tr>
+<td align="left"><code>description</code></td>
+<td align="left">网站描述</td>
+</tr>
+<tr>
+<td align="left"><code>keywords</code></td>
+<td align="left">网站的关键词。支持多个关键词。</td>
+</tr>
+<tr>
+<td align="left"><code>author</code></td>
+<td align="left">您的名字</td>
+</tr>
+<tr>
+<td align="left"><code>language</code></td>
+<td align="left">网站使用的语言。对于简体中文用户来说，使用不同的主题可能需要设置成不同的值，请参考你的主题的文档自行设置，常见的有 <code>zh-Hans</code>和 <code>zh-CN</code>。</td>
+</tr>
+<tr>
+<td align="left"><code>timezone</code></td>
+<td align="left">网站时区。Hexo 默认使用您电脑的时区。请参考 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">时区列表</a> 进行设置，如 <code>America/New_York</code>, <code>Japan</code>, 和 <code>UTC</code> 。一般的，对于中国大陆地区可以使用 <code>Asia/Shanghai</code>。</td>
+</tr>
+</tbody></table>
+<h2 id="Categories"><a href="#Categories" class="headerlink" title="Categories"></a>Categories</h2><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left"></th>
+<th align="left"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">参数</td>
+<td align="left">描述</td>
+<td align="left">默认值</td>
+</tr>
+<tr>
+<td align="left"><code>source_dir</code></td>
+<td align="left">资源文件夹，这个文件夹用来存放内容。</td>
+<td align="left"><code>source</code></td>
+</tr>
+<tr>
+<td align="left"><code>public_dir</code></td>
+<td align="left">公共文件夹，这个文件夹用于存放生成的站点文件。</td>
+<td align="left"><code>public</code></td>
+</tr>
+<tr>
+<td align="left"><code>tag_dir</code></td>
+<td align="left">标签文件夹</td>
+<td align="left"><code>tags</code></td>
+</tr>
+<tr>
+<td align="left"><code>archive_dir</code></td>
+<td align="left">归档文件夹</td>
+<td align="left"><code>archives</code></td>
+</tr>
+<tr>
+<td align="left"><code>category_dir</code></td>
+<td align="left">分类文件夹</td>
+<td align="left"><code>categories</code></td>
+</tr>
+<tr>
+<td align="left"><code>code_dir</code></td>
+<td align="left">Include code 文件夹，<code>source_dir</code> 下的子目录</td>
+<td align="left"><code>downloads/code</code></td>
+</tr>
+<tr>
+<td align="left"><code>i18n_dir</code></td>
+<td align="left">国际化（i18n）文件夹</td>
+<td align="left"><code>:lang</code></td>
+</tr>
+<tr>
+<td align="left"><code>skip_render</code></td>
+<td align="left">跳过指定文件的渲染。匹配到的文件将会被不做改动地复制到 <code>public</code> 目录中。您可使用 <a target="_blank" rel="noopener" href="https://github.com/micromatch/micromatch#extended-globbing">glob 表达式</a>来匹配路径。</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="Writing"><a href="#Writing" class="headerlink" title="Writing"></a>Writing</h2><table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+<th align="left">默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>new_post_name</code></td>
+<td align="left">新文章的文件名称</td>
+<td align="left">:title.md</td>
+</tr>
+<tr>
+<td align="left"><code>default_layout</code></td>
+<td align="left">预设布局</td>
+<td align="left">post</td>
+</tr>
+<tr>
+<td align="left"><code>auto_spacing</code></td>
+<td align="left">在中文和英文之间加入空格</td>
+<td align="left">false</td>
+</tr>
+<tr>
+<td align="left"><code>titlecase</code></td>
+<td align="left">把标题转换为 title case</td>
+<td align="left">false</td>
+</tr>
+<tr>
+<td align="left"><code>external_link</code></td>
+<td align="left">在新标签中打开链接</td>
+<td align="left">true</td>
+</tr>
+<tr>
+<td align="left"><code>external_link.enable</code></td>
+<td align="left">在新标签中打开链接</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>external_link.field</code></td>
+<td align="left">对整个网站（<code>site</code>）生效或仅对文章（<code>post</code>）生效</td>
+<td align="left"><code>site</code></td>
+</tr>
+<tr>
+<td align="left"><code>external_link.exclude</code></td>
+<td align="left">需要排除的域名。主域名和子域名如 <code>www</code> 需分别配置</td>
+<td align="left"><code>[]</code></td>
+</tr>
+<tr>
+<td align="left"><code>filename_case</code></td>
+<td align="left">把文件名称转换为 (1) 小写或 (2) 大写</td>
+<td align="left">0</td>
+</tr>
+<tr>
+<td align="left"><code>render_drafts</code></td>
+<td align="left">显示草稿</td>
+<td align="left">false</td>
+</tr>
+<tr>
+<td align="left"><code>post_asset_folder</code></td>
+<td align="left">启动 <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/asset-folders">Asset 文件夹</a></td>
+<td align="left">false</td>
+</tr>
+<tr>
+<td align="left"><code>relative_link</code></td>
+<td align="left">把链接改为与根目录的相对位址</td>
+<td align="left">false</td>
+</tr>
+<tr>
+<td align="left"><code>future</code></td>
+<td align="left">显示未来的文章</td>
+<td align="left">true</td>
+</tr>
+<tr>
+<td align="left"><code>highlight</code></td>
+<td align="left">代码块的设置, 请参考 <a target="_blank" rel="noopener" href="https://hexo.io/docs/syntax-highlight#Highlight-js">Highlight.js</a> 进行设置</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>prismjs</code></td>
+<td align="left">代码块的设置, 请参考 <a target="_blank" rel="noopener" href="https://hexo.io/docs/syntax-highlight#PrismJS">PrismJS</a> 进行设置</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="Date"><a href="#Date" class="headerlink" title="Date"></a>Date</h2><p>Hexo 使用 <a target="_blank" rel="noopener" href="http://momentjs.com/">Moment.js</a> 来解析和显示时间。</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+<th align="left">默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>date_format</code></td>
+<td align="left">日期格式</td>
+<td align="left"><code>YYYY-MM-DD</code></td>
+</tr>
+<tr>
+<td align="left"><code>time_format</code></td>
+<td align="left">时间格式</td>
+<td align="left"><code>HH:mm:ss</code></td>
+</tr>
+<tr>
+<td align="left"><code>updated_option</code></td>
+<td align="left">当 Front Matter 中没有指定 <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/variables#%E9%A1%B5%E9%9D%A2%E5%8F%98%E9%87%8F"><code>updated</code></a> 时 <code>updated</code> 的取值</td>
+<td align="left"><code>mtime</code></td>
+</tr>
+</tbody></table>
+<h2 id="Extensions"><a href="#Extensions" class="headerlink" title="Extensions"></a>Extensions</h2><table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>theme</code></td>
+<td align="left">当前主题名称。值为<code>false</code>时禁用主题</td>
+</tr>
+<tr>
+<td align="left"><code>theme_config</code></td>
+<td align="left">主题的配置文件。在这里放置的配置会覆盖主题目录下的 <code>_config.yml</code> 中的配置</td>
+</tr>
+<tr>
+<td align="left"><code>deploy</code></td>
+<td align="left">部署部分的设置</td>
+</tr>
+<tr>
+<td align="left"><code>meta_generator</code></td>
+<td align="left"><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/meta#%E5%B1%9E%E6%80%A7">Meta generator</a> 标签。 值为 <code>false</code> 时 Hexo 不会在头部插入该标签</td>
+</tr>
+</tbody></table>
+<h2 id="Front-Matter"><a href="#Front-Matter" class="headerlink" title="Front-Matter"></a>Front-Matter</h2><p>Front-matter 是文件最上方以 <code>---</code> 分隔的区域，用于指定个别文件的变量，举例来说：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">date: 2013/7/13 20:46:25</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p>以下是预先定义的参数，您可在模板中使用这些参数值并加以利用。</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+<th align="left">默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>layout</code></td>
+<td align="left">布局</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/configuration#%E6%96%87%E7%AB%A0"><code>config.default_layout</code></a></td>
+</tr>
+<tr>
+<td align="left"><code>title</code></td>
+<td align="left">标题</td>
+<td align="left">文章的文件名</td>
+</tr>
+<tr>
+<td align="left"><code>date</code></td>
+<td align="left">建立日期</td>
+<td align="left">文件建立日期</td>
+</tr>
+<tr>
+<td align="left"><code>updated</code></td>
+<td align="left">更新日期</td>
+<td align="left">文件更新日期</td>
+</tr>
+<tr>
+<td align="left"><code>comments</code></td>
+<td align="left">开启文章的评论功能</td>
+<td align="left">true</td>
+</tr>
+<tr>
+<td align="left"><code>tags</code></td>
+<td align="left">标签（不适用于分页）</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>categories</code></td>
+<td align="left">分类（不适用于分页）</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>permalink</code></td>
+<td align="left">覆盖文章网址</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>excerpt</code></td>
+<td align="left">Page excerpt in plain text. Use <a target="_blank" rel="noopener" href="https://hexo.io/docs/tag-plugins#Post-Excerpt">this plugin</a> to format the text</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>disableNunjucks</code></td>
+<td align="left">Disable rendering of Nunjucks tag <code>&#123;&#123; &#125;&#125;</code>&#x2F;<code>&#123;% %&#125;</code> and <a target="_blank" rel="noopener" href="https://hexo.io/docs/tag-plugins">tag plugins</a> when enabled</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>lang</code></td>
+<td align="left">Set the language to override <a target="_blank" rel="noopener" href="https://hexo.io/docs/internationalization#Path">auto-detection</a></td>
+<td align="left">Inherited from <code>_config.yml</code></td>
+</tr>
+</tbody></table>
+<p>​		</p>
+<p>更多细节可以查阅:<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/configuration">官方文档</a></p>
+<h1 id="基于NexT框架主题的DIY"><a href="#基于NexT框架主题的DIY" class="headerlink" title="基于NexT框架主题的DIY"></a>基于NexT框架主题的DIY</h1><p>​		我们选择框架在themes文件夹下，文件树如图所示:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml <span class="comment"># 主题的配置文件。</span></span><br><span class="line">├── languages	<span class="comment"># 语言文件夹</span></span><br><span class="line">├── layout <span class="comment"># 布局文件夹</span></span><br><span class="line">├── scripts <span class="comment"># 脚本文件夹</span></span><br><span class="line">└── <span class="built_in">source</span> <span class="comment"># 资源文件夹，除了模板以外的 Asset，例如 CSS、JavaScript 文件等，都应该放在这个文件夹中</span></span><br></pre></td></tr></table></figure>
+
+<p>​		目前 Hexo 里面应用最多的主题基本就是 Next 主题了，个人感觉这个主题还是挺好看的，另外它支持的插件和功能也极为丰富，配置了这个主题，我们的博客可以支持更多的扩展功能，比如阅览进度条、中英文空格排版、图片懒加载等等。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+
+<p>​		执行完毕之后 <a target="_blank" rel="noopener" href="https://theme-next.js.org/">Next 主题</a>的源码就会出现在项目的 themes&#x2F;next 文件夹下。 然后我们需要修改下博客所用的主题名称，修改项目根目录下的 _config.yml 文件，找到 theme 字段，修改为 next 即可，修改如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+<h2 id="添加Gitalk评论区"><a href="#添加Gitalk评论区" class="headerlink" title="添加Gitalk评论区"></a>添加Gitalk评论区</h2><p>打开 github.com&#x2F;settings&#x2F;applications&#x2F;new ，具体填法如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Application name //应用名称，随便填</span><br><span class="line">Homepage URL //没有过多要求，可以填自己的博客地址</span><br><span class="line">Application description //应用描述，描述一下，无要求</span><br><span class="line">Authorization callback URL //这个就有要求了，填自己要使用Gitalk的博客地址，不可乱填</span><br></pre></td></tr></table></figure>
+<p>接着，你就可以得到Client ID和Client Secret，之后会用到的。接下来，我们回到hexo的主题配置里.</p>
+<p>在next主题中，修改_config.xml文件，如图所示</p>
+<center>
+          <img src="gitalk1.jpg", width=80%>
+</center>
+
+<center>
+          <img src="gitalk2.jpg", width=80%>
+</center>
+
+
+<h1 id="难点与收获"><a href="#难点与收获" class="headerlink" title="难点与收获"></a>难点与收获</h1><h2 id="Tags-And-Categories"><a href="#Tags-And-Categories" class="headerlink" title="Tags And Categories"></a>Tags And Categories</h2><p>​		只有文章支持分类和标签，您可以在 Front-matter 中设置。在其他系统中，分类和标签听起来很接近，但是在 Hexo 中两者有着明显的差别：分类具有顺序性和层次性，也就是说 <code>Foo, Bar</code> 不等于 <code>Bar, Foo</code>；而标签没有顺序和层次。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">categories:</span><br><span class="line">- Diary</span><br><span class="line">tags:</span><br><span class="line">- PS3</span><br><span class="line">- Games</span><br></pre></td></tr></table></figure>
+
+<p>但是 Hexo <strong>不支持指定多个同级分类</strong>。下面的指定方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">categories:</span><br><span class="line">  - Diary</span><br><span class="line">  - Life</span><br></pre></td></tr></table></figure>
+
+<p><em>会使分类<code>Life</code>成为<code>Diary</code>的子分类</em>，而不是并列分类.</p>
+<p>如果你需要为文章添加多个分类，可以尝试以下 list 中的方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">categories:</span><br><span class="line">- [Diary, PlayStation]</span><br><span class="line">- [Diary, Games]</span><br><span class="line">- [Life]</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><blockquote>
+<ol>
+<li><u><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">Hexo官方参考资料</a></u></li>
+<li><a target="_blank" rel="noopener" href="https://cuiqingcai.com/7625.html">崔庆才-利用 GitHub + Hexo + Next 从零搭建一个博客)</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.github.com/cn/authentication/connecting-to-github-with-ssh/about-ssh">Github的SSH连接</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/hexo-asset-image-for-hexo5">Hexo 图片部署</a></li>
+</ol>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hexo/" rel="tag"># Hexo</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/" rel="next" title="Beautify Mac Terminal By Iterm2 And zsh">
+      Beautify Mac Terminal By Iterm2 And zsh <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA%E5%8F%8A%E5%85%B6%E9%83%A8%E7%BD%B2"><span class="nav-number">2.</span> <span class="nav-text">项目构建及其部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%9D%A1%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">准备条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8F%8A%E6%9C%AC%E5%9C%B0%E6%90%AD%E5%BB%BA"><span class="nav-number">2.2.</span> <span class="nav-text">项目初始及本地搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E9%83%A8%E5%9C%A8Github-Page%E4%B8%8A%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="nav-number">2.3.</span> <span class="nav-text">项目部在Github Page上的部署</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%8A%9F%E8%83%BD%E8%A7%A3%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">配置文件功能解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Site"><span class="nav-number">3.1.</span> <span class="nav-text">Site</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Categories"><span class="nav-number">3.2.</span> <span class="nav-text">Categories</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Writing"><span class="nav-number">3.3.</span> <span class="nav-text">Writing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Date"><span class="nav-number">3.4.</span> <span class="nav-text">Date</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extensions"><span class="nav-number">3.5.</span> <span class="nav-text">Extensions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Front-Matter"><span class="nav-number">3.6.</span> <span class="nav-text">Front-Matter</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ENexT%E6%A1%86%E6%9E%B6%E4%B8%BB%E9%A2%98%E7%9A%84DIY"><span class="nav-number">4.</span> <span class="nav-text">基于NexT框架主题的DIY</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0Gitalk%E8%AF%84%E8%AE%BA%E5%8C%BA"><span class="nav-number">4.1.</span> <span class="nav-text">添加Gitalk评论区</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%BE%E7%82%B9%E4%B8%8E%E6%94%B6%E8%8E%B7"><span class="nav-number">5.</span> <span class="nav-text">难点与收获</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tags-And-Categories"><span class="nav-number">5.1.</span> <span class="nav-text">Tags And Categories</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jay Wang"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Jay Wang</p>
+  <div class="site-description" itemprop="description">This is a pure blog to record Mars' private projects, study summaries and career planning.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jay Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

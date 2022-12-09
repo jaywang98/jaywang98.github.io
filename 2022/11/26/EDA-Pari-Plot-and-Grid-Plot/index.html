@@ -27,17 +27,16 @@
 <meta property="og:site_name" content="Jay&#39;s Blog">
 <meta property="og:description" content="This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
-<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/iris-dataset.png">
-<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/raw_pic.jpg">
-<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
-<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/grid-plot.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/iris-dataset.png">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/raw_pic.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/pair-plot.jpg">
+<meta property="og:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/grid-plot.jpg">
 <meta property="article:published_time" content="2022-11-26T15:51:00.000Z">
-<meta property="article:modified_time" content="2022-12-09T16:39:02.227Z">
+<meta property="article:modified_time" content="2022-12-09T16:43:49.942Z">
 <meta property="article:author" content="Jay Wang">
 <meta property="article:tag" content="EDA">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/EDA-pariplot-and-gridplot/pair-plot.jpg">
+<meta name="twitter:image" content="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/iris-dataset.png">
 
 <link rel="canonical" href="http://example.com/2022/11/26/EDA-Pari-Plot-and-Grid-Plot/">
 
@@ -189,7 +188,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-09 16:39:02" itemprop="dateModified" datetime="2022-12-09T16:39:02Z">2022-12-09</time>
+                <time title="Modified: 2022-12-09 16:43:49" itemprop="dateModified" datetime="2022-12-09T16:43:49Z">2022-12-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -213,15 +212,11 @@
 
       
         <p>This article introduces the pair-plot and grid-plot methods in seaborn and how to analyze these pictures.  A pairs plot allows us to see distributions of single variables and relationships between two variables, and it is an excellent method to identify trends for follow-up analysis.</p>
-<center>
-    <img src="./EDA-pariplot-and-gridplot/pair-plot.jpg" width=80% >
-</center>
-
 <span id="more"></span>
 
 <h2 id="Pair-Plot-in-seaborn"><a href="#Pair-Plot-in-seaborn" class="headerlink" title="Pair Plot in seaborn"></a>Pair Plot in seaborn</h2><p>First of all, let’s take a glance at the dataset. I am using pandas to read the iris dataset, which contains three classes of 50 instances each, where each class refers to a type of iris plant. </p>
 <center>
-  <img src="EDA-pariplot-and-gridplot/iris-dataset.png", width=80%>
+  <img src="iris-dataset.png", width=80%>
 </center>
 
 <blockquote>
@@ -232,7 +227,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">data = pd.read_csv(<span class="string">&#x27;dataset/iris_csv.csv&#x27;</span>)</span><br><span class="line">sns.pairplot(data)</span><br></pre></td></tr></table></figure>
 
 <center>
-  <img src="EDA-pariplot-and-gridplot/raw_pic.jpg", width=80%>
+  <img src="raw_pic.jpg", width=80%>
 </center>
 
 <p>The pairs plot builds on two basic figures, the histogram and the scatter plot. The histogram on the diagonal allows us to see the distribution of a single variable. At the same time, the scatter plots on the upper and lower triangles show the relationship (or lack thereof) between two variables. We see that petal length and width are positively correlated, indicating that flowers with longer petal lengths tend to hold wider petal widths. </p>
@@ -240,7 +235,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sns.pairplot(data, hue=<span class="string">&#x27;class&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <center>
-  <img src="EDA-pariplot-and-gridplot/pair-plot.jpg", width=80%>
+  <img src="pair-plot.jpg", width=80%>
 </center>
 
 
@@ -249,14 +244,14 @@
 <h2 id="PairGrid-in-seaborn"><a href="#PairGrid-in-seaborn" class="headerlink" title="PairGrid in seaborn"></a>PairGrid in seaborn</h2><p>In contrast to the <code>sns.pairplot</code> function, <code>sns.pairgrid</code> is a class that does not automatically fill in the plots for us. Instead, we create a class instance and map specific functions to the different sections of the grid. To create a PairGrid example with our data, we use the following code, which also limits the variables we will show:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create an instance of the PairGrid class.</span></span><br><span class="line">grid = sns.PairGrid(data)</span><br></pre></td></tr></table></figure>
 
-<p>If we were to display this, we would get a blank graph because we have not mapped any functions to the grid sections. There are three grid sections to fill in for a PairGrid: the upper triangle, the lower triangle, and the diagonal. To map plots to these sections, we use the <code>grid.map </code> method on the section. For example, to map a scatter plot to the upper triangle, we use the following:</p>
+<p>If we were to display this, we would get a blank graph because we have not mapped any functions to the grid sections. There are three grid sections to fill in for a PairGrid: the upper triangle, the lower triangle, and the diagonal. To map plots to these sections, we use the <code>grid.map</code> method on the section. For example, to map a scatter plot to the upper triangle, we use the following:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Map a scatter plot to the upper triangle</span></span><br><span class="line">grid = grid.map_upper(plt.scatter, color = <span class="string">&#x27;darkred&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>The <code>map_upper</code> method takes in any function that accepts two arrays of variables (such as <code>plt.scatter</code>)and associated keywords (such as <code>color</code>). The <code>map_lower</code> process is the same but fills in the lower triangle of the grid. The <code>map_diag</code> is slightly different because it takes in a function that accepts a single array (remember, the diagonal shows only one variable).</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Map a histogram to the diagonal</span></span><br><span class="line">grid = grid.map_diag(plt.hist, bins=<span class="number">10</span>, color=<span class="string">&#x27;darkred&#x27;</span>, edgecolor = <span class="string">&#x27;k&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Map a density plot to the lower triangle</span></span><br><span class="line">grid = grid.map_lower(sns.kdeplot, color=<span class="string">&#x27;darkred&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <center>
-      <img src="EDA-pariplot-and-gridplot/grid-plot.jpg", width=80%>
+      <img src="grid-plot.jpg", width=80%>
 </center>
 
 <p>The real benefits of using the PairGrid class come when we want to create custom functions to map different information onto the plot.</p>
@@ -277,6 +272,13 @@
 
 
         
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/21/Dolphinscheduler-Project/" rel="prev" title="Dolphinscheduler Project">
+      <i class="fa fa-chevron-left"></i> Dolphinscheduler Project
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
       </footer>
     
   </article>
@@ -350,16 +352,16 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>

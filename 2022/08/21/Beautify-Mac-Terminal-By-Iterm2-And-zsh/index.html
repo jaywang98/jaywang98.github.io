@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在公司实习需要使用mac电脑来进行工作，其中bash是非常重要的工具，本文也是对bash进行了美化，提升使用的效率。本文采用的方案是利用ITerm2 与 oh-my-zsh来进行美化,同时也要将其配置在vscode中。 在配置的过程中，发现如果路径层级过长，主机名的信息较长，会导致代码容易换行，影响观看。所以选了隐藏路径以及主机名，仅保留当前文件名，效果如图所示：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Beautify Mac Terminal By Iterm2 And zsh">
+<meta property="og:url" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="在公司实习需要使用mac电脑来进行工作，其中bash是非常重要的工具，本文也是对bash进行了美化，提升使用的效率。本文采用的方案是利用ITerm2 与 oh-my-zsh来进行美化,同时也要将其配置在vscode中。 在配置的过程中，发现如果路径层级过长，主机名的信息较长，会导致代码容易换行，影响观看。所以选了隐藏路径以及主机名，仅保留当前文件名，效果如图所示：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/default-iterm2.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/oh-my-zsh%E5%AE%89%E8%A3%85.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/ZSH_THEME.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/iterm-pref.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/zsh-font.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/zsh-demo.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/hide-host-name.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/profiles.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/local_profile.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/ser_profile.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/defalut_zsh_color.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/defalut_pycahrm_zsh_color.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/default_vscode_zsh_color.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/beautify_zsh.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/beautify_vscode_zsh.jpg">
+<meta property="og:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/beautify_hostname.jpg">
+<meta property="article:published_time" content="2022-08-21T13:08:44.000Z">
+<meta property="article:modified_time" content="2022-12-09T16:49:01.923Z">
+<meta property="article:author" content="Jay Wang">
+<meta property="article:tag" content="mac">
+<meta property="article:tag" content="zsh">
+<meta property="article:tag" content="iterm2">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/default-iterm2.jpg">
+
+<link rel="canonical" href="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Beautify Mac Terminal By Iterm2 And zsh | Jay's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jay's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">饥于学识，忠于技术。<br> Hungry For Knowledge,<br>Loyal To Technology.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/21/Beautify-Mac-Terminal-By-Iterm2-And-zsh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Jay Wang">
+      <meta itemprop="description" content="This is a pure blog to record Mars' private projects, study summaries and career planning.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Beautify Mac Terminal By Iterm2 And zsh
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-08-21 13:08:44" itemprop="dateCreated datePublished" datetime="2022-08-21T13:08:44Z">2022-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-09 16:49:01" itemprop="dateModified" datetime="2022-12-09T16:49:01Z">2022-12-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mac/" itemprop="url" rel="index"><span itemprop="name">Mac</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在公司实习需要使用mac电脑来进行工作，其中bash是非常重要的工具，本文也是对bash进行了美化，提升使用的效率。<br>本文采用的方案是利用ITerm2 与 oh-my-zsh来进行美化,同时也要将其配置在vscode中。</p>
+<p>在配置的过程中，发现如果路径层级过长，主机名的信息较长，会导致代码容易换行，影响观看。所以选了隐藏路径以及主机名，仅保留当前文件名，效果如图所示：</p>
+<span id="more"></span>
+
+<h1 id="1-Iterm2安装及其陪配置"><a href="#1-Iterm2安装及其陪配置" class="headerlink" title="1. Iterm2安装及其陪配置"></a>1. Iterm2安装及其陪配置</h1><p>手动安装: <a target="_blank" rel="noopener" href="https://iterm2.com/">打开Iterm2 的官方网址</a>，下载相应的Iterm2 安装包，并安装。<br>Homebrew安装: 为了方便后期管理，采用homebrew进行安装。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># use brew to install iterm2</span></span><br><span class="line">brew install iTerm2</span><br></pre></td></tr></table></figure>
+
+<p>设置iTerm2为默认的终端</p>
+<center>
+    <img src="default-iterm2.jpg" width=80% >
+</center>
+
+<p>设置iTerm2的字体为 <em>Meslo LG L DZ for powerline</em>，之后vscode的terminal字体也设置为<em>Meslo LG L DZ for powerline</em>。</p>
+<h1 id="2-oh-my-zsh"><a href="#2-oh-my-zsh" class="headerlink" title="2. oh-my-zsh"></a>2. oh-my-zsh</h1><p> 首先，在进入oh-my-zsh之前，要先了解zsh。</p>
+<blockquote>
+<p> <strong>zsh又称为z-shell</strong>，是一款可用作交互式登录的shell及脚本编写的命令解释器。Zsh对Bourne shell做出了大量改进，同时加入了Bash、ksh及tcsh的某些功能。自2019年起，macOS的默认Shell已从Bash改为Zsh。</p>
+</blockquote>
+<p> zsh 有如下几个特点：</p>
+<ul>
+<li>可帮助用户键入常用命令选项及参数的可编程命令行补全功能，自带对数百条命令的支持</li>
+<li>可与任意Shell共享命令历史</li>
+<li>多种兼容模式（例如，Zsh可在运行为&#x2F;bin&#x2F;sh的情况下伪装成Bourne shell）</li>
+<li>自带where命令，其与which命令类似，但是显示指定于$PATH中所指定指令的全部位置，而不是仅显示所使用指令的位置。</li>
+</ul>
+<p>其中，用户社区网站”Oh My Zsh”收集Z shell的第三方插件及主题。</p>
+<p>本文也是利用oh-my-zsh来美化oh-my-zsh，利用如下指令进行安装，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># curl 安装</span></span><br><span class="line"><span class="built_in">export</span> REMOTE=https://gitee.com/imirror/ohmyzsh.git</span><br><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://cdn.jsdelivr.net/gh/ohmyzsh/ohmyzsh/tools/install.sh)</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># wget安装</span></span><br><span class="line"><span class="built_in">export</span> REMOTE=https://gitee.com/imirror/ohmyzsh.git</span><br><span class="line">sh -c <span class="string">&quot;<span class="subst">$(wget -O- https://cdn.jsdelivr.net/gh/ohmyzsh/ohmyzsh/tools/install.sh)</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># fetch安装</span></span><br><span class="line"><span class="built_in">export</span> REMOTE=https://gitee.com/imirror/ohmyzsh.git</span><br><span class="line">sh -c <span class="string">&quot;<span class="subst">$(fetch -o - https://cdn.jsdelivr.net/gh/ohmyzsh/ohmyzsh/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>安装界面如下：</p>
+<center>
+<img src="oh-my-zsh安装.jpg" width=80% >
+</center>
+
+<h1 id="3-主题配置"><a href="#3-主题配置" class="headerlink" title="3. 主题配置"></a>3. 主题配置</h1><p>oh-my-zsh主题很多，其中 <em>agnoster</em> 是比较常用的主题，本文也是打算使用该主题（更多的主题可以查看<a target="_blank" rel="noopener" href="https://github.com/ohmyzsh/ohmyzsh/wiki/Themes">theme主题</a>。</p>
+<h1 id="3-1-ZSH-THEME配置"><a href="#3-1-ZSH-THEME配置" class="headerlink" title="3.1 ZSH_THEME配置"></a>3.1 ZSH_THEME配置</h1><p>打开 ~&#x2F;.zshrc,修改ZSH-THEME这一配置.</p>
+<blockquote>
+<p><em>zshrc</em> file is where <em>you’d place customizations to the z shell</em>.</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZSH_THEME =&quot;agnoster</span><br></pre></td></tr></table></figure>
+<center>
+<img src="ZSH_THEME.jpg" width=80% >
+</center>
+
+<h1 id="3-2-字体安装与配置"><a href="#3-2-字体安装与配置" class="headerlink" title="3.2  字体安装与配置"></a>3.2  字体安装与配置</h1><p>注意agnoster需要安装额外的字体<a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/powerline/fonts/Meslo%20Slashed/Meslo%20LG%20S%20Regular%20for%20Powerline.ttf">Meslo for Powerline</a>,　下载安装相应的ttf文件。</p>
+<p>配置完字体之后，打开iTerm -&gt; Preferences -&gt; Profiles -&gt; Text -&gt; Change Font，选择Meslo LG S Regular for Powerline。</p>
+<center>
+    <img src="iterm-pref.jpg", width=80% >
+</center>
+
+
+<center>
+    <img src="zsh-font.jpg", width=80% >
+</center>
+
+<center>
+    <img src="zsh-demo.jpg", width=80% >
+</center>
+
+<h1 id="4-优化zsh"><a href="#4-优化zsh" class="headerlink" title="4. 优化zsh"></a>4. 优化zsh</h1><p>在3.2 中，看到安装oh-my-zsh后的效果。但是存在一定的不足，比如命令行开头都有主机名，文件路径，能够看到当层级增多的时候，会显得非常的长，影响输入，需要一定的优化。笔者选择的方式，是隐去主机名和层级路径，仅保留用户名和当前文件路径，当需要查看路径的时候调用指令pwd即可。</p>
+<h1 id="4-1-隐藏主机名"><a href="#4-1-隐藏主机名" class="headerlink" title="4.1 隐藏主机名"></a>4.1 隐藏主机名</h1><p>根据3.1可知，zsh的配置信息主要在~&#x2F;.zshrc这个文件，在该<strong>文件底部增加</strong>下添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># * 方法一：隐藏主机和用户名-是笔者选择的方案</span></span><br><span class="line"><span class="function"><span class="title">prompt_context</span></span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二：隐藏主机名</span></span><br><span class="line"><span class="function"><span class="title">prompt_context</span></span>() &#123;</span><br><span class="line">  <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$USER</span>&quot;</span> != <span class="string">&quot;<span class="variable">$DEFAULT_USER</span>&quot;</span> || -n <span class="string">&quot;<span class="variable">$SSH_CLIENT</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    prompt_segment black default <span class="string">&quot;%(!.%&#123;%F&#123;yellow&#125;%&#125;.)<span class="variable">$USER</span>&quot;</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法三：隐藏用户名</span></span><br><span class="line"><span class="function"><span class="title">prompt_context</span></span>() &#123;</span><br><span class="line">  <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$USER</span>&quot;</span> != <span class="string">&quot;<span class="variable">$DEFAULT_USER</span>&quot;</span> || -n <span class="string">&quot;<span class="variable">$SSH_CLIENT</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">    prompt_segment black default <span class="string">&quot;%(!.%&#123;%F&#123;yellow&#125;%&#125;.)<span class="variable">$HOST</span>&quot;</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#  更新 ~/.zshrc</span></span><br><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-2-隐藏层级路径，保留当前路径"><a href="#4-2-隐藏层级路径，保留当前路径" class="headerlink" title="4.2 隐藏层级路径，保留当前路径"></a>4.2 隐藏层级路径，保留当前路径</h1><p>在路径 &#x2F;Users&#x2F;username&#x2F;.oh-my-zsh&#x2F;themes&#x2F;agnoster.zsh-theme 下，打开后找到prompt_dir() {}这个函数，然后将prompt_segment blue black ‘%~’ , 最后面的波浪线改为c即可：prompt_segment blue black ‘%c’,。</p>
+<p>最后调用指令 source &#x2F;User&#x2F;username&#x2F;.zshrc, 完成刷新，实现了保留用户名以及当前层级用户。</p>
+<center>
+    <img src="hide-host-name.jpg", width=80% >
+</center>
+
+<h1 id="5-插件"><a href="#5-插件" class="headerlink" title="5. 插件"></a>5. 插件</h1><p>为了进一步提高zsh的效率，笔者添加了部分插件。但是，调用终端的好处在于其快速，便捷，过多的插件反而会使得终端显得臃肿，得不偿失，我们故仅添加必要的插件。<br>首先安装oh-my-zsh，打开~&#x2F;.zshrc文件找到plugins&#x3D;( git )，这里是我们已经启用了那些插件.如果想要启用某个插件，装好之后直接修改</p>
+<blockquote>
+<p>plugins &#x3D; (插件A 插件B 插件C)</p>
+</blockquote>
+<ol>
+<li><p>zsh-autosuggestions<br>非常好用的一个插件，会记录你之前输入过的所有命令，并且自动匹配你可能想要输入命令，然后按→补全</p>
+</li>
+<li><p>zsh-syntax-highlighting<br>这个插件直接在输入过程中就会提示你，当前命令是否正确，错误红色，正确绿色</p>
+</li>
+</ol>
+<h1 id="6-vscode-配置"><a href="#6-vscode-配置" class="headerlink" title="6. vscode 配置"></a>6. vscode 配置</h1><p>在vscode中有可能会出现乱码的情况，这是因为终端的字体没有设置好。在设置搜索中，打开setting.json文件，加入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;terminal.integrated.defaultProfile.osx&quot;</span>: <span class="string">&quot;zsh&quot;</span>,</span><br><span class="line"><span class="string">&quot;terminal.integrated.fontFamily&quot;</span>: <span class="string">&quot;Meslo LG L DZ for Powerline&quot;</span>,</span><br></pre></td></tr></table></figure>
+
+<h1 id="7-拓展"><a href="#7-拓展" class="headerlink" title="7. 拓展"></a>7. 拓展</h1><h2 id="7-1-不同环境的profile切换"><a href="#7-1-不同环境的profile切换" class="headerlink" title="7.1 不同环境的profile切换"></a>7.1 不同环境的profile切换</h2><p>在开发过程，我们会经常掉用到ssh，连接服务器进行开发，此时会产生如下需求：</p>
+<p><strong>希望在不同的环境，自动切换对应的profile。</strong></p>
+<p>比如，我们在local的时候能够使用local profile， 在ssh连接 服务器时，能切换到开发profile。</p>
+<h3 id="7-1-1-构建profiles"><a href="#7-1-1-构建profiles" class="headerlink" title="7.1.1 构建profiles"></a>7.1.1 构建profiles</h3><p>根据我们需求，构建指定profile。<br>例如笔者在开发过程中，会存在本地，与开发环境两种环境，所以构造了三种不同的profile（Mars_Default, Mars_Server, Mars_other）,其中profile命名可以自行定义。</p>
+<center>
+<img src="profiles.jpg" width=80% >
+</center>
+
+<h3 id="7-1-2-修改域名映射"><a href="#7-1-2-修改域名映射" class="headerlink" title="7.1.2 修改域名映射"></a>7.1.2 修改域名映射</h3><p>实现不同环境自动切换profile的原理，为识别server名中指定部分，触发profile的切换。所以我们需要修改本地的域名映射, 添加上前缀即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/hosts</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hosts example</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">[server ip1] ser_spider</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">[server ip2] ser_stats1</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="7-1-3-创建custom-shell-脚本"><a href="#7-1-3-创建custom-shell-脚本" class="headerlink" title="7.1.3 创建custom shell 脚本"></a>7.1.3 创建custom shell 脚本</h3><p>进入路径, 创建<code>iTrem2-ssh.zsh</code>，其中有样例<code>example.zsh</code>可做参考。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.oh-my-zsh/custom</span><br></pre></td></tr></table></figure>
+<p>往<code>iTrem2-ssh.zsh</code>文件写入脚本，注意其中Mars_Default, Mars_Server, Mars_other 需要根据自身需求进行替换。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## reference: https://gist.github.com/erangaeb/78614828234323f57b328b61a588209e#file-itrem2-ssh-zsh</span></span><br><span class="line"><span class="comment"># tabc &lt;profile name&gt; do the profile change</span></span><br><span class="line">function tabc() &#123;</span><br><span class="line">  NAME=$<span class="number">1</span>; <span class="keyword">if</span> [ -z <span class="string">&quot;$NAME&quot;</span> ]; then NAME=<span class="string">&quot;Mars_Default&quot;</span>; fi </span><br><span class="line">  <span class="comment"># if you have trouble with this, change</span></span><br><span class="line">  <span class="comment"># &quot;Default&quot; to the name of your default theme</span></span><br><span class="line">  echo -e <span class="string">&quot;\033]50;SetProfile=$NAME\a&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># reset the terminal profile to Default  when exit from the ssh session</span></span><br><span class="line">function tab-reset() &#123;</span><br><span class="line">    NAME=<span class="string">&quot;Mars_Default&quot;</span></span><br><span class="line">    echo -e <span class="string">&quot;\033]50;SetProfile=$NAME\a&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># selecting different terminal profile according to ssh&#x27;ing host</span></span><br><span class="line"><span class="comment"># tabc &lt;profile name&gt; do the profile change</span></span><br><span class="line"><span class="comment">#   1. Production profile to production server (ssh eranga@production_box) </span></span><br><span class="line"><span class="comment">#   2. Staging profile to staging server(ssh eranga@staging_box) </span></span><br><span class="line"><span class="comment">#   3. Other profile to any other server(test server, amazon box etc)</span></span><br><span class="line">function colorssh() &#123;</span><br><span class="line">    <span class="keyword">if</span> [[ -n <span class="string">&quot;$ITERM_SESSION_ID&quot;</span> ]]; then</span><br><span class="line">        trap <span class="string">&quot;tab-reset&quot;</span> INT EXIT</span><br><span class="line">        <span class="keyword">if</span> [[ <span class="string">&quot;$*&quot;</span> =~ <span class="string">&quot;ser_*&quot;</span> ]]; then</span><br><span class="line">            tabc Mars_Server</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            tabc Mars_other</span><br><span class="line">        fi</span><br><span class="line">    fi</span><br><span class="line">    ssh $*</span><br><span class="line">&#125;</span><br><span class="line">compdef _ssh tabc=ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># creates an alias to ssh</span></span><br><span class="line"><span class="comment"># when execute ssh from the terminal it calls to colorssh function</span></span><br><span class="line">alias ssh=<span class="string">&quot;colorssh&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-1-4-效果"><a href="#7-1-4-效果" class="headerlink" title="7.1.4 效果"></a>7.1.4 效果</h3><center>
+<img src="local_profile.jpg" width=80% >
+</center>
+
+<center>
+<img src="ser_profile.jpg" width=80% >
+</center>
+
+<h2 id="自定义oh-my-zsh-颜色"><a href="#自定义oh-my-zsh-颜色" class="headerlink" title="自定义oh-my-zsh 颜色"></a>自定义oh-my-zsh 颜色</h2><h3 id="自定义提示项颜色"><a href="#自定义提示项颜色" class="headerlink" title="自定义提示项颜色"></a>自定义提示项颜色</h3><p>在使用iterm2的过程，出现了如下的问题。<br>在pycharm， vscode中集成了zsh, 由于iterm2默认背景为黑色，而pycharm，vscode背景颜色为白色，导致提示项（标签以及hostname）的颜色不协调。</p>
+<ol>
+<li>原iterm2颜色<center>
+<img src="defalut_zsh_color.jpg" width=80% >
+</center></li>
+<li>原pycharm终端颜色<center>
+<img src="defalut_pycahrm_zsh_color.jpg" width=80% >
+</center></li>
+<li>原vscode终端颜色<center>
+<img src="default_vscode_zsh_color.jpg" width=80% >
+</center></li>
+</ol>
+<p>希望能够对提示项的颜色自定义。</p>
+<p>修改 ~&#x2F;.oh-my-zsh&#x2F;themes&#x2F;agnoster.zsh-theme 文件（该文件取决与主题选择）中prompt_context() ，将原black修改为自定颜色代码(Xterm Number，Xterm Name皆可name注意大小写)，参考<a target="_blank" rel="noopener" href="https://www.ditig.com/256-colors-cheat-sheet">256 Colors Cheat Sheet</a>.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">the theme file depend on your customer theme</span></span><br><span class="line">vi ~/.oh-my-zsh/themes/agnoster.zsh-theme</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## Prompt components</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Each component will draw itself, and hide itself <span class="keyword">if</span> no information needs to be shown</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Context: user@hostname (<span class="built_in">who</span> am I and <span class="built_in">where</span> am I)</span></span><br><span class="line">prompt_context() &#123;</span><br><span class="line">  if [[ &quot;$USERNAME&quot; != &quot;$DEFAULT_USER&quot; || -n &quot;$SSH_CLIENT&quot; ]]; then</span><br><span class="line">      # prompt_segment black default &quot;%(!.%&#123;%F&#123;black&#125;%&#125;.)%n@%m&quot;</span><br><span class="line">     prompt_segment cyan default &quot;%(!.%&#123;%F&#123;black&#125;%&#125;.)%n@%m&quot;</span><br><span class="line">  fi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后，调用<code>source ~/.zshrc</code>激活设置。</p>
+<p>笔者选用cyan，效果如下：</p>
+<ol>
+<li>iterm2 终端效果<center>
+<img src="beautify_zsh.jpg" width=80% >
+</center></li>
+<li>vscode 效果<center>
+<img src="beautify_vscode_zsh.jpg" width=80% >
+</center></li>
+</ol>
+<h2 id="自定义hostname颜色"><a href="#自定义hostname颜色" class="headerlink" title="自定义hostname颜色"></a>自定义hostname颜色</h2><p>虽然完成了提示项颜色的自定义，但是发现在终端中cyan背景和绿色字体显示效果不佳，希望能将hotsname修改为黑色。修改hostname与修改提示项颜色类似，在原prompt_context()，中<code>%n@%m</code>代表用户名与主机名，在该项前添加颜色项%F{custom_color}即可，笔者最终代码如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">the theme file depend on your customer theme</span></span><br><span class="line">vi ~/.oh-my-zsh/themes/agnoster.zsh-theme</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## Prompt components</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Each component will draw itself, and hide itself <span class="keyword">if</span> no information needs to be shown</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Context: user@hostname (<span class="built_in">who</span> am I and <span class="built_in">where</span> am I)</span></span><br><span class="line">prompt_context() &#123;</span><br><span class="line">  if [[ &quot;$USERNAME&quot; != &quot;$DEFAULT_USER&quot; || -n &quot;$SSH_CLIENT&quot; ]]; then</span><br><span class="line">      # prompt_segment black default &quot;%(!.%&#123;%F&#123;black&#125;%&#125;.)%n@%m&quot;</span><br><span class="line">     prompt_segment cyan default &quot;%(!.%&#123;%F&#123;black&#125;%&#125;.)%F&#123;black&#125;%n@%m&quot;</span><br><span class="line">  fi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>修改完成后，调用<code>source ~/.zshrc</code>激活设置,最终iterm效果如下：</p>
+<center>
+<img src="beautify_hostname.jpg" width=80% >
+</center>
+
+
+
+<h1 id="参考文档："><a href="#参考文档：" class="headerlink" title="参考文档："></a>参考文档：</h1><p><a target="_blank" rel="noopener" href="https://iterm2.com/">1. Iterm2官方文档以及下载链接</a></p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000039834490">2. mac之 iTerm2 + Oh My Zsh 终端安装教程</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ohmyzsh/ohmyzsh/wiki/Themes">3. oh-my-zsh theme主题方案</a></p>
+<p><a target="_blank" rel="noopener" href="https://0clickjacking0.github.io/2020/10/04/oh-my-zsh%E9%9A%90%E8%97%8F%E7%94%A8%E6%88%B7%E5%90%8D%E6%88%96%E8%80%85%E4%B8%BB%E6%9C%BA%E5%90%8D/">4. oh-my-zsh 隐藏主机名</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/ee442cb4d6c2">5. Bash shell &#x2F; Zsh 里修改前缀 (隐藏用户@主机，添加Git分支名称)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.ioiox.com/archives/34.html">6.macOS使用oh-my-zsh美化Terminal,iTerm2,VSCode命令行终端配置教程</a></p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/rahasak/change-terminal-color-when-ssh-e2a13ccee681">7. Change terminal color when SSH
+</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mac/" rel="tag"># mac</a>
+              <a href="/tags/zsh/" rel="tag"># zsh</a>
+              <a href="/tags/iterm2/" rel="tag"># iterm2</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/21/Build-A-Private-Github-Blog-Based-On-Hexo/" rel="prev" title="Build A Private Github Blog Based On Hexo">
+      <i class="fa fa-chevron-left"></i> Build A Private Github Blog Based On Hexo
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/21/Cockpit-A-monitor-program-basing-on-grafana-glances-and-influxdb/" rel="next" title="Cockpit: A monitor program basing on grafana, glances and influxdb">
+      Cockpit: A monitor program basing on grafana, glances and influxdb <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Iterm2%E5%AE%89%E8%A3%85%E5%8F%8A%E5%85%B6%E9%99%AA%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">1. Iterm2安装及其陪配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-oh-my-zsh"><span class="nav-number">2.</span> <span class="nav-text">2. oh-my-zsh</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">3. 主题配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1-ZSH-THEME%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">3.1 ZSH_THEME配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-%E5%AD%97%E4%BD%93%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">3.2  字体安装与配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E4%BC%98%E5%8C%96zsh"><span class="nav-number">6.</span> <span class="nav-text">4. 优化zsh</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-1-%E9%9A%90%E8%97%8F%E4%B8%BB%E6%9C%BA%E5%90%8D"><span class="nav-number">7.</span> <span class="nav-text">4.1 隐藏主机名</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-2-%E9%9A%90%E8%97%8F%E5%B1%82%E7%BA%A7%E8%B7%AF%E5%BE%84%EF%BC%8C%E4%BF%9D%E7%95%99%E5%BD%93%E5%89%8D%E8%B7%AF%E5%BE%84"><span class="nav-number">8.</span> <span class="nav-text">4.2 隐藏层级路径，保留当前路径</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E6%8F%92%E4%BB%B6"><span class="nav-number">9.</span> <span class="nav-text">5. 插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-vscode-%E9%85%8D%E7%BD%AE"><span class="nav-number">10.</span> <span class="nav-text">6. vscode 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E6%8B%93%E5%B1%95"><span class="nav-number">11.</span> <span class="nav-text">7. 拓展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-%E4%B8%8D%E5%90%8C%E7%8E%AF%E5%A2%83%E7%9A%84profile%E5%88%87%E6%8D%A2"><span class="nav-number">11.1.</span> <span class="nav-text">7.1 不同环境的profile切换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-1-%E6%9E%84%E5%BB%BAprofiles"><span class="nav-number">11.1.1.</span> <span class="nav-text">7.1.1 构建profiles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-2-%E4%BF%AE%E6%94%B9%E5%9F%9F%E5%90%8D%E6%98%A0%E5%B0%84"><span class="nav-number">11.1.2.</span> <span class="nav-text">7.1.2 修改域名映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-3-%E5%88%9B%E5%BB%BAcustom-shell-%E8%84%9A%E6%9C%AC"><span class="nav-number">11.1.3.</span> <span class="nav-text">7.1.3 创建custom shell 脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-4-%E6%95%88%E6%9E%9C"><span class="nav-number">11.1.4.</span> <span class="nav-text">7.1.4 效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89oh-my-zsh-%E9%A2%9C%E8%89%B2"><span class="nav-number">11.2.</span> <span class="nav-text">自定义oh-my-zsh 颜色</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%90%E7%A4%BA%E9%A1%B9%E9%A2%9C%E8%89%B2"><span class="nav-number">11.2.1.</span> <span class="nav-text">自定义提示项颜色</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89hostname%E9%A2%9C%E8%89%B2"><span class="nav-number">11.3.</span> <span class="nav-text">自定义hostname颜色</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3%EF%BC%9A"><span class="nav-number">12.</span> <span class="nav-text">参考文档：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jay Wang"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Jay Wang</p>
+  <div class="site-description" itemprop="description">This is a pure blog to record Mars' private projects, study summaries and career planning.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jay Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
