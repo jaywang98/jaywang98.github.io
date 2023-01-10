@@ -11,5 +11,5 @@ This the Jay WANG's resume.
 
 <!-- more -->
 
-<object data="./WANGJie_resume.pdf" type="application/pdf" width="100%" height="1200px">
+<object data="./WANGJie_resume.pdf" type="application/pdf" width="100%" height="800px">
 
