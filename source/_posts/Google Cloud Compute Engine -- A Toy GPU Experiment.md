@@ -12,26 +12,43 @@ Recording How to Deploy a model on Google Cloud GPU Compute Engine.
 ## 1. Request a Virtual Machine
 
 ### 1.1 Expand Individual Quotas Limitation
-For a new google platform account who is try to request a VM with GPU, the first thing is to expand the individual quotas, or you will failed to request it and receieve some error infomation like "Your project has reached its limit for GPUS_ALL_REGIONS globally".
+For a new google platform account who tries to request a VM with GPU, the first thing to do is to expand the individual quotas, or you will failed to request it and receieve some error infomation like "Your project has reached its limit for GPUS_ALL_REGIONS globally".
 
 To expand the individual quotas, click that: __"Google Cloud" > "IAM & Admin" > "Quotas(left bar)" > "Filter: Metric:compute.googleapis.com/gpus_all_regions" > "click the item" > "Edit Quotas" > "Set new limit as 1"__
 
 And for the request description, you can write you purpose like: Do some deep learning expriements.
+
 <center>
     <img src="request1.png", width="80%">
 </center>
 
 
 ### 1.2 Request a VM with GPU
+After you successing to expand your quota limitation for gpu, you can try to request a virtual machine with GPU.
+
+First of all, just open google cloud homepage and click the "Create a VM" buttom.
+
+<center>
+    <img src="homepage.png", width="80%">
+</center>
+
+Secondly, you can set your perfered VM name, region, disk and so on. And for Machine Configuration, just click GPU to pick up GPU type.
+
+And especially, to avoid some annoying cuda configuration, you can click the Switch Image bottom in the Boot Disk buttom and select your favourite image among different OS system, disk size and cuda version.
+
+<center>
+    <img src="image.png", width="80%">
+</center>
+
+<center>
+    <img src="boot.png", width="80%">
+</center>
+
+When all settings have been done, you can then create your VM.
 ___
+## 2. Configure the Project Dependencies
 
-## 2. Request a Virtual Machine
-
-___
-
-## 3. Configure the Project Dependencies
-
-### 3.1 Remote ssh Configuration
+### 2.1 Remote ssh Configuration
 When the requesting VM was constructed in Google Cloud, we can not only access it on the website, but we can apply ssh to access it locally. To achieve it, we need to do two steps:
 
 #### 3.1.2 Online
@@ -60,7 +77,7 @@ The you can use ssh to access your vm:
 ssh UserName@ServerAlias
 ```
 
-### 3.2 Check VM Info
+### 2.2 Check VM Info
 
 In session 2, we select the "GPU-optimized Debian 10 with CUDA 11.0" image which help us to avoid the additional work at no additional cost. We can use command ```nvidia-smi``` to check the gpu detail, as shown below"
 
@@ -68,7 +85,7 @@ In session 2, we select the "GPU-optimized Debian 10 with CUDA 11.0" image which
     <img src="linux-gpu-info.png">
 </center>
 
-### 3.3 Pycharm ssh Python Interpreter
+### 2.3 Pycharm ssh Python Interpreter
 Pyenv and virtualenv help us to manage different the python versions. Using below commands to install pyenv, virtualenv and python3.6.9.
 
 ```shell
@@ -118,7 +135,7 @@ Now we finished the remote setting, the saved file will be upload to the server 
 
 ___
 
-## 4. Result
+## 3. Result
 We can run some toy code on the server to check whether the gpu is accessible.
 
 ```python
