@@ -5,18 +5,18 @@ categories:
 tags:
 ---
 
-Recording How to Deploy a model on Google Cloud GPU Compute Engine.
+Recording How to Request a Google Cloud Compute Engine VM with personalized GPU.
 
 <!-- more -->
 
 ## 1. Request a Virtual Machine
 
 ### 1.1 Expand Individual Quotas Limitation
-For a new google platform account who tries to request a VM with GPU, the first thing to do is to expand the individual quotas, or you will failed to request it and receieve some error infomation like "Your project has reached its limit for GPUS_ALL_REGIONS globally".
+For a new account who want to request a VM with GPU on the google cloud compute engine, the first thing to do is to expand the individual quotas. Otherwise, you will fail and receieve some error infomation like "Your project has reached its limit for GPUS_ALL_REGIONS globally".
 
-To expand the individual quotas, click that: __"Google Cloud" > "IAM & Admin" > "Quotas(left bar)" > "Filter: Metric:compute.googleapis.com/gpus_all_regions" > "click the item" > "Edit Quotas" > "Set new limit as 1"__
+To expand the individual quotas, click as below order: __"Google Cloud" > "IAM & Admin" > "Quotas(left bar)" > "Filter: Metric:compute.googleapis.com/gpus_all_regions" > "click the item" > "Edit Quotas" > "Set new limit as 1"__.
 
-And for the request description, you can write you purpose like: Do some deep learning expriements.
+And for the _request description_, you can write you purpose just like: Do some deep learning expriements.
 
 <center>
     <img src="request1.png", width="80%">
@@ -24,7 +24,7 @@ And for the request description, you can write you purpose like: Do some deep le
 
 
 ### 1.2 Request a VM with GPU
-After you successing to expand your quota limitation for gpu, you can try to request a virtual machine with GPU.
+After individual GPU quota limitation being expanded successfully, a virtual machine with GPU can begin to be requested.
 
 First of all, just open google cloud homepage and click the "Create a VM" buttom.
 
@@ -32,9 +32,9 @@ First of all, just open google cloud homepage and click the "Create a VM" buttom
     <img src="homepage.png", width="80%">
 </center>
 
-Secondly, you can set your perfered VM name, region, disk and so on. And for Machine Configuration, just click GPU to pick up GPU type.
+Secondly, some basic settings, like VM name, region, disk and so on should be put in. And especially, for the Machine Configuration, just click GPU to pick up the target GPU type.
 
-And especially, to avoid some annoying cuda configuration, you can click the Switch Image bottom in the Boot Disk buttom and select your favourite image among different OS system, disk size and cuda version.
+To avoid some annoying cuda configurations, you can just click the _Switch Image_ bottom in the _Boot Disk_ buttom and select your favourite image among different OS system, disk size and cuda version.
 
 <center>
     <img src="image.png", width="80%">
@@ -49,21 +49,21 @@ ___
 ## 2. Configure the Project Dependencies
 
 ### 2.1 Remote ssh Configuration
-When the requesting VM was constructed in Google Cloud, we can not only access it on the website, but we can apply ssh to access it locally. To achieve it, we need to do two steps:
+Once VM is constructed on Google Cloud, not only access on the website directly is allowed, but also local ssh to access it can be applied to. To achieve it, simple two steps should be done:
 
-#### 3.1.2 Online
-For online Google Cloud page setting, the user's ssh key is supposed to save in the [Meta & dataSSH KEYS Website](https://console.cloud.google.com/compute/metadata). 
+#### 2.1.2 Online
+For online Google Cloud page setting side, the user's ssh key is supposed to save in the [Meta & dataSSH KEYS Website](https://console.cloud.google.com/compute/metadata). 
 
-We can find our ssh key in local path: ```~/.ssh/id_rsa.pub```. If you haven't create the ssh, you can refer to https://cloud.google.com/compute/docs/connect/create-ssh-keys.
+The personal ssh key can be found in private server as the local path: ```~/.ssh/id_rsa.pub```. If the ssh key haven't be created, this website https://cloud.google.com/compute/docs/connect/create-ssh-keys may be helpfully.
 
-Then, we can copy the content in the Google Platform website to make it able to identify you. 
+Once the user's ssh key is added to the Google Platform, it will be able to identify the specified user and allow him to access it by ssh. 
 
 > BTW, the id_rsa.pub content behind the ```= ``` should be replaced to the username as which you would like to login in.
 
-#### 3.1.3 Local
-To access the Google cloud VM more efficient, we can assign an alias to the VM ip.
+#### 2.1.3 Local
+To access the Google cloud VM more efficient and convenient, assigning an alias to the VM is a good method.
 
-The VM ip address is easy to find on its detail page, and we should append it with its alias to ```/etc/hosts```. 
+The VM ip address can be easy to get on its detail home page, and just append the ip address with its alias to the last line of ```/etc/hosts``` with special format. 
 
 Just like:
 
@@ -71,7 +71,7 @@ Just like:
 192.168.0.1 ServerAlias
 ```
 
-The you can use ssh to access your vm:
+The following command can be used to access the VM locally:
 
 ```
 ssh UserName@ServerAlias
@@ -79,14 +79,16 @@ ssh UserName@ServerAlias
 
 ### 2.2 Check VM Info
 
-In session 2, we select the "GPU-optimized Debian 10 with CUDA 11.0" image which help us to avoid the additional work at no additional cost. We can use command ```nvidia-smi``` to check the gpu detail, as shown below"
+In session 2, selecting the "GPU-optimized Debian 10 with CUDA 11.0" image helps user to avoid the additional work at no additional cost. A simple command ```nvidia-smi``` can be used to check the gpu detail, as shown below"
 
 <center>
     <img src="linux-gpu-info.png">
 </center>
 
 ### 2.3 Pycharm ssh Python Interpreter
-Pyenv and virtualenv help us to manage different the python versions. Using below commands to install pyenv, virtualenv and python3.6.9.
+
+#### 2.3.1 Install Pyenv interpreter on VM
+Pyenv and virtualenv are powerful software to help users to manage their different python versions. Just using below commands to install the pyenv, virtualenv and specified verson ofpython, like 3.6.9.
 
 ```shell
 # python dependencies
@@ -113,30 +115,32 @@ exec bash
 pyenv virtualenv 3.6.9 darts-env
 ```
 
-Then, we can use ssh python interpreter and project synchronization to edit the code in the local code editor and run it on the server.
+#### 2.3.2 Pycharm Remote SSH Configuration
 
-Firstly, open the "Pycharm > References > Python Interpreter > Add Interpreter > On SSH".
+To achieve the goal of editting the code locally while running it on the server, some steps should be taken to the Pycharm.
+
+First of all, clicking following the order: the "Pycharm > References > Python Interpreter > Add Interpreter > On SSH".
 
 <center>
     <img src="ssh-interpreter1.png", width=80%>
 </center>
 
-Secondly, setting the SSH connection as Existing, and put Username@ServerAlias in the SSH Server.
+Setting the SSH connection as Existing, and put Username@ServerAlias in the SSH Server.
 <center>
     <img src="ssh-interpreter2.png", width=80%>
 </center>
 
-When "Introspection completed" appeared means the server is connected successfully.  And then click next, we should set the Project directory and Python runtime configuration.
+When "Introspection completed" appeared means the server is connected successfully.  And then click next, setting the Project directory and Python runtime configuration.
 <center>
     <img src="ssh-interpreter4.png", width=80%>
 </center>
 
-Now we finished the remote setting, the saved file will be upload to the server to keep the synchronization. To run the project on the server, we can open "Tools > Start SSH Session" to ssh to server and run the project code.
+Now remote setting is finished, and the saved file will be upload to the server to keep the synchronization. To run the project on the server, opening "Tools > Start SSH Session" to ssh to server and run the project code.
 
 ___
 
 ## 3. Result
-We can run some toy code on the server to check whether the gpu is accessible.
+Try some toy code on the server to check whether the gpu is accessible.
 
 ```python
 print("PyTorch version: ", torch.__version__)
