@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Recording How to Deploy a model on Google Cloud GPU Compute Engine.">
+  <meta name="description" content="Recording How to Request a Google Cloud Compute Engine VM with personalized GPU.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Google Cloud Compute Engine -- A Toy GPU Experiment">
 <meta property="og:url" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/index.html">
 <meta property="og:site_name" content="Jay&#39;s Blog">
-<meta property="og:description" content="Recording How to Deploy a model on Google Cloud GPU Compute Engine.">
+<meta property="og:description" content="Recording How to Request a Google Cloud Compute Engine VM with personalized GPU.">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/request1.png">
 <meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/homepage.png">
@@ -37,7 +37,7 @@
 <meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/ssh-interpreter4.png">
 <meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/demo.png">
 <meta property="article:published_time" content="2023-01-10T20:03:08.000Z">
-<meta property="article:modified_time" content="2023-01-10T16:22:29.027Z">
+<meta property="article:modified_time" content="2023-01-10T16:37:02.520Z">
 <meta property="article:author" content="Jay Wang">
 <meta property="article:tag" content="DS&#x2F;DE, Hadoop, Spark, Hive, Hbase, ML&#x2F;DL, Java ,etc.">
 <meta name="twitter:card" content="summary">
@@ -197,7 +197,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2023-01-10 20:03:08 / Modified: 16:22:29" itemprop="dateCreated datePublished" datetime="2023-01-10T20:03:08Z">2023-01-10</time>
+              <time title="Created: 2023-01-10 20:03:08 / Modified: 16:37:02" itemprop="dateCreated datePublished" datetime="2023-01-10T20:03:08Z">2023-01-10</time>
             </span>
 
           
@@ -211,25 +211,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Recording How to Deploy a model on Google Cloud GPU Compute Engine.</p>
+        <p>Recording How to Request a Google Cloud Compute Engine VM with personalized GPU.</p>
 <span id="more"></span>
 
-<h2 id="1-Request-a-Virtual-Machine"><a href="#1-Request-a-Virtual-Machine" class="headerlink" title="1. Request a Virtual Machine"></a>1. Request a Virtual Machine</h2><h3 id="1-1-Expand-Individual-Quotas-Limitation"><a href="#1-1-Expand-Individual-Quotas-Limitation" class="headerlink" title="1.1 Expand Individual Quotas Limitation"></a>1.1 Expand Individual Quotas Limitation</h3><p>For a new google platform account who tries to request a VM with GPU, the first thing to do is to expand the individual quotas, or you will failed to request it and receieve some error infomation like “Your project has reached its limit for GPUS_ALL_REGIONS globally”.</p>
-<p>To expand the individual quotas, click that: <strong>“Google Cloud” &gt; “IAM &amp; Admin” &gt; “Quotas(left bar)” &gt; “Filter: Metric:compute.googleapis.com&#x2F;gpus_all_regions” &gt; “click the item” &gt; “Edit Quotas” &gt; “Set new limit as 1”</strong></p>
-<p>And for the request description, you can write you purpose like: Do some deep learning expriements.</p>
+<h2 id="1-Request-a-Virtual-Machine"><a href="#1-Request-a-Virtual-Machine" class="headerlink" title="1. Request a Virtual Machine"></a>1. Request a Virtual Machine</h2><h3 id="1-1-Expand-Individual-Quotas-Limitation"><a href="#1-1-Expand-Individual-Quotas-Limitation" class="headerlink" title="1.1 Expand Individual Quotas Limitation"></a>1.1 Expand Individual Quotas Limitation</h3><p>For a new account who want to request a VM with GPU on the google cloud compute engine, the first thing to do is to expand the individual quotas. Otherwise, you will fail and receieve some error infomation like “Your project has reached its limit for GPUS_ALL_REGIONS globally”.</p>
+<p>To expand the individual quotas, click as below order: <strong>“Google Cloud” &gt; “IAM &amp; Admin” &gt; “Quotas(left bar)” &gt; “Filter: Metric:compute.googleapis.com&#x2F;gpus_all_regions” &gt; “click the item” &gt; “Edit Quotas” &gt; “Set new limit as 1”</strong>.</p>
+<p>And for the <em>request description</em>, you can write you purpose just like: Do some deep learning expriements.</p>
 <center>
     <img src="request1.png", width="80%">
 </center>
 
 
-<h3 id="1-2-Request-a-VM-with-GPU"><a href="#1-2-Request-a-VM-with-GPU" class="headerlink" title="1.2 Request a VM with GPU"></a>1.2 Request a VM with GPU</h3><p>After you successing to expand your quota limitation for gpu, you can try to request a virtual machine with GPU.</p>
+<h3 id="1-2-Request-a-VM-with-GPU"><a href="#1-2-Request-a-VM-with-GPU" class="headerlink" title="1.2 Request a VM with GPU"></a>1.2 Request a VM with GPU</h3><p>After individual GPU quota limitation being expanded successfully, a virtual machine with GPU can begin to be requested.</p>
 <p>First of all, just open google cloud homepage and click the “Create a VM” buttom.</p>
 <center>
     <img src="homepage.png", width="80%">
 </center>
 
-<p>Secondly, you can set your perfered VM name, region, disk and so on. And for Machine Configuration, just click GPU to pick up GPU type.</p>
-<p>And especially, to avoid some annoying cuda configuration, you can click the Switch Image bottom in the Boot Disk buttom and select your favourite image among different OS system, disk size and cuda version.</p>
+<p>Secondly, some basic settings, like VM name, region, disk and so on should be put in. And especially, for the Machine Configuration, just click GPU to pick up the target GPU type.</p>
+<p>To avoid some annoying cuda configurations, you can just click the <em>Switch Image</em> bottom in the <em>Boot Disk</em> buttom and select your favourite image among different OS system, disk size and cuda version.</p>
 <center>
     <img src="image.png", width="80%">
 </center>
@@ -240,9 +240,9 @@
 
 <p>When all settings have been done, you can then create your VM.</p>
 <hr>
-<h2 id="2-Configure-the-Project-Dependencies"><a href="#2-Configure-the-Project-Dependencies" class="headerlink" title="2. Configure the Project Dependencies"></a>2. Configure the Project Dependencies</h2><h3 id="2-1-Remote-ssh-Configuration"><a href="#2-1-Remote-ssh-Configuration" class="headerlink" title="2.1 Remote ssh Configuration"></a>2.1 Remote ssh Configuration</h3><p>When the requesting VM was constructed in Google Cloud, we can not only access it on the website, but we can apply ssh to access it locally. To achieve it, we need to do two steps:</p>
-<h4 id="3-1-2-Online"><a href="#3-1-2-Online" class="headerlink" title="3.1.2 Online"></a>3.1.2 Online</h4><p>For online Google Cloud page setting, the user’s ssh key is supposed to save in the <a target="_blank" rel="noopener" href="https://console.cloud.google.com/compute/metadata">Meta &amp; dataSSH KEYS Website</a>. </p>
-<p>We can find our ssh key in local path: <code>~/.ssh/id_rsa.pub</code>. If you haven’t create the ssh, you can refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/compute/docs/connect/create-ssh-keys">https://cloud.google.com/compute/docs/connect/create-ssh-keys</a>.</p>
+<h2 id="2-Configure-the-Project-Dependencies"><a href="#2-Configure-the-Project-Dependencies" class="headerlink" title="2. Configure the Project Dependencies"></a>2. Configure the Project Dependencies</h2><h3 id="2-1-Remote-ssh-Configuration"><a href="#2-1-Remote-ssh-Configuration" class="headerlink" title="2.1 Remote ssh Configuration"></a>2.1 Remote ssh Configuration</h3><p>Once VM is constructed on Google Cloud, not only access on the website directly is allowed, but also local ssh to access it can be applied to. To achieve it, simple two steps should be done:</p>
+<h4 id="3-1-2-Online"><a href="#3-1-2-Online" class="headerlink" title="3.1.2 Online"></a>3.1.2 Online</h4><p>For online Google Cloud page setting side, the user’s ssh key is supposed to save in the <a target="_blank" rel="noopener" href="https://console.cloud.google.com/compute/metadata">Meta &amp; dataSSH KEYS Website</a>. </p>
+<p>The personal ssh key can be found in private server as the local path: <code>~/.ssh/id_rsa.pub</code>. If the ssh key haven’t be created, this website <a target="_blank" rel="noopener" href="https://cloud.google.com/compute/docs/connect/create-ssh-keys">https://cloud.google.com/compute/docs/connect/create-ssh-keys</a> may be helpfully.</p>
 <p>Then, we can copy the content in the Google Platform website to make it able to identify you. </p>
 <blockquote>
 <p>BTW, the id_rsa.pub content behind the <code>= </code> should be replaced to the username as which you would like to login in.</p>
