@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Recording How to Deploy a model on Google Cloud GPU Compute Engine.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Google Cloud Compute Engine -- A Toy GPU Experiment">
+<meta property="og:url" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="Recording How to Deploy a model on Google Cloud GPU Compute Engine.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/request1.png">
+<meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/linux-gpu-info.png">
+<meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/ssh-interpreter1.png">
+<meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/ssh-interpreter2.png">
+<meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/ssh-interpreter4.png">
+<meta property="og:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/demo.png">
+<meta property="article:published_time" content="2023-01-10T20:03:08.000Z">
+<meta property="article:modified_time" content="2023-01-10T14:02:53.019Z">
+<meta property="article:author" content="Jay Wang">
+<meta property="article:tag" content="DS&#x2F;DE, Hadoop, Spark, Hive, Hbase, ML&#x2F;DL, Java ,etc.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/request1.png">
+
+<link rel="canonical" href="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Google Cloud Compute Engine -- A Toy GPU Experiment | Jay's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jay's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">饥於學識，忠於技術。<br> Hungry For Knowledge,<br>Loyal To Technology.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/11/Google%20Cloud%20Compute%20Engine%20--%20A%20Toy%20GPU%20Experiment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Jay Wang">
+      <meta itemprop="description" content="This is a pure blog to record Mars' private projects, study summaries and career planning.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Google Cloud Compute Engine -- A Toy GPU Experiment
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-01-10 20:03:08 / Modified: 14:02:53" itemprop="dateCreated datePublished" datetime="2023-01-10T20:03:08Z">2023-01-10</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Recording How to Deploy a model on Google Cloud GPU Compute Engine.</p>
+<span id="more"></span>
+
+<h2 id="1-Request-a-Virtual-Machine"><a href="#1-Request-a-Virtual-Machine" class="headerlink" title="1. Request a Virtual Machine"></a>1. Request a Virtual Machine</h2><h3 id="1-1-Expand-Individual-Quotas-Limitation"><a href="#1-1-Expand-Individual-Quotas-Limitation" class="headerlink" title="1.1 Expand Individual Quotas Limitation"></a>1.1 Expand Individual Quotas Limitation</h3><p>For a new google platform account who is try to request a VM with GPU, the first thing is to expand the individual quotas, or you will failed to request it and receieve some error infomation like “Your project has reached its limit for GPUS_ALL_REGIONS globally”.</p>
+<p>To expand the individual quotas, click that: <strong>“Google Cloud” &gt; “IAM &amp; Admin” &gt; “Quotas(left bar)” &gt; “Filter: Metric:compute.googleapis.com&#x2F;gpus_all_regions” &gt; “click the item” &gt; “Edit Quotas” &gt; “Set new limit as 1”</strong></p>
+<p>And for the request description, you can write you purpose like: Do some deep learning expriements.</p>
+<center>
+    <img src="request1.png", width="80%">
+</center>
+
+
+<h3 id="1-2-Request-a-VM-with-GPU"><a href="#1-2-Request-a-VM-with-GPU" class="headerlink" title="1.2 Request a VM with GPU"></a>1.2 Request a VM with GPU</h3><hr>
+<h2 id="2-Request-a-Virtual-Machine"><a href="#2-Request-a-Virtual-Machine" class="headerlink" title="2. Request a Virtual Machine"></a>2. Request a Virtual Machine</h2><hr>
+<h2 id="3-Configure-the-Project-Dependencies"><a href="#3-Configure-the-Project-Dependencies" class="headerlink" title="3. Configure the Project Dependencies"></a>3. Configure the Project Dependencies</h2><h3 id="3-1-Remote-ssh-Configuration"><a href="#3-1-Remote-ssh-Configuration" class="headerlink" title="3.1 Remote ssh Configuration"></a>3.1 Remote ssh Configuration</h3><p>When the requesting VM was constructed in Google Cloud, we can not only access it on the website, but we can apply ssh to access it locally. To achieve it, we need to do two steps:</p>
+<h4 id="3-1-2-Online"><a href="#3-1-2-Online" class="headerlink" title="3.1.2 Online"></a>3.1.2 Online</h4><p>For online Google Cloud page setting, the user’s ssh key is supposed to save in the <a target="_blank" rel="noopener" href="https://console.cloud.google.com/compute/metadata">Meta &amp; dataSSH KEYS Website</a>. </p>
+<p>We can find our ssh key in local path: <code>~/.ssh/id_rsa.pub</code>. If you haven’t create the ssh, you can refer to <a target="_blank" rel="noopener" href="https://cloud.google.com/compute/docs/connect/create-ssh-keys">https://cloud.google.com/compute/docs/connect/create-ssh-keys</a>.</p>
+<p>Then, we can copy the content in the Google Platform website to make it able to identify you. </p>
+<blockquote>
+<p>BTW, the id_rsa.pub content behind the <code>= </code> should be replaced to the username as which you would like to login in.</p>
+</blockquote>
+<h4 id="3-1-3-Local"><a href="#3-1-3-Local" class="headerlink" title="3.1.3 Local"></a>3.1.3 Local</h4><p>To access the Google cloud VM more efficient, we can assign an alias to the VM ip.</p>
+<p>The VM ip address is easy to find on its detail page, and we should append it with its alias to <code>/etc/hosts</code>. </p>
+<p>Just like:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.0.1 ServerAlias</span><br></pre></td></tr></table></figure>
+
+<p>The you can use ssh to access your vm:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh UserName@ServerAlias</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-Check-VM-Info"><a href="#3-2-Check-VM-Info" class="headerlink" title="3.2 Check VM Info"></a>3.2 Check VM Info</h3><p>In session 2, we select the “GPU-optimized Debian 10 with CUDA 11.0” image which help us to avoid the additional work at no additional cost. We can use command <code>nvidia-smi</code> to check the gpu detail, as shown below”</p>
+<center>
+    <img src="linux-gpu-info.png">
+</center>
+
+<h3 id="3-3-Pycharm-ssh-Python-Interpreter"><a href="#3-3-Pycharm-ssh-Python-Interpreter" class="headerlink" title="3.3 Pycharm ssh Python Interpreter"></a>3.3 Pycharm ssh Python Interpreter</h3><p>Pyenv and virtualenv help us to manage different the python versions. Using below commands to install pyenv, virtualenv and python3.6.9.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">python dependencies</span></span><br><span class="line">sudo apt-get update </span><br><span class="line">sudo apt-get upgrade</span><br><span class="line">sudo apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">pyenv</span> </span><br><span class="line">git clone https://github.com/pyenv/pyenv.git ~/.pyenv</span><br><span class="line">echo &#x27;export PYENV_ROOT=&quot;$HOME/.pyenv&quot;&#x27; &gt;&gt; ~/.bashrc </span><br><span class="line">echo &#x27;export PATH=&quot;$PYENV_ROOT/bin:$PATH&quot;&#x27; &gt;&gt; ~/.bashrc </span><br><span class="line">echo -e &#x27;if command -v pyenv 1&gt;/dev/null 2&gt;&amp;1; then\n eval &quot;$(pyenv init -)&quot;\nfi&#x27; &gt;&gt; ~/.bashrc</span><br><span class="line">exec bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">template py 3.6.9</span></span><br><span class="line">pyenv install 3.6.9</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">virtualenv pyenv plugin</span></span><br><span class="line">git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv</span><br><span class="line">echo &#x27;eval &quot;$(pyenv virtualenv-init -)&quot;&#x27; &gt;&gt; ~/.bashrc</span><br><span class="line">exec bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rename darts environment</span></span><br><span class="line">pyenv virtualenv 3.6.9 darts-env</span><br></pre></td></tr></table></figure>
+
+<p>Then, we can use ssh python interpreter and project synchronization to edit the code in the local code editor and run it on the server.</p>
+<p>Firstly, open the “Pycharm &gt; References &gt; Python Interpreter &gt; Add Interpreter &gt; On SSH”.</p>
+<center>
+    <img src="ssh-interpreter1.png", width=80%>
+</center>
+
+<p>Secondly, setting the SSH connection as Existing, and put Username@ServerAlias in the SSH Server.</p>
+<center>
+    <img src="ssh-interpreter2.png", width=80%>
+</center>
+
+<p>When “Introspection completed” appeared means the server is connected successfully.  And then click next, we should set the Project directory and Python runtime configuration.</p>
+<center>
+    <img src="ssh-interpreter4.png", width=80%>
+</center>
+
+<p>Now we finished the remote setting, the saved file will be upload to the server to keep the synchronization. To run the project on the server, we can open “Tools &gt; Start SSH Session” to ssh to server and run the project code.</p>
+<hr>
+<h2 id="4-Result"><a href="#4-Result" class="headerlink" title="4. Result"></a>4. Result</h2><p>We can run some toy code on the server to check whether the gpu is accessible.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;PyTorch version: &quot;</span>, torch.__version__)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GPU support: &quot;</span>, torch.cuda.is_available())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Available devices count: &quot;</span>, torch.cuda.device_count())</span><br><span class="line"></span><br><span class="line"><span class="comment"># move tensor to GPU if available</span></span><br><span class="line">tensor = torch.rand(<span class="number">4</span>, <span class="number">6</span>)</span><br><span class="line">device = <span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span></span><br><span class="line">tensor = tensor.to(device)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Device tensor is stored on: <span class="subst">&#123;tensor.device&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># toy model Attention</span></span><br><span class="line">v = torch.rand((<span class="number">2</span>,<span class="number">4</span>,<span class="number">8</span>))</span><br><span class="line">k = v</span><br><span class="line">q = torch.rand((<span class="number">2</span>,<span class="number">4</span>,<span class="number">8</span>))</span><br><span class="line">d_k = <span class="number">8</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">softmax</span>(<span class="params">x, dim=<span class="number">0</span></span>):</span><br><span class="line">    x_exp = x.exp()</span><br><span class="line">    partition = x_exp.<span class="built_in">sum</span>(dim=dim, keepdim=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> x_exp / partition</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">attention</span>(<span class="params">q, k, v</span>):</span><br><span class="line">    <span class="comment"># bmm batch matrix multiply</span></span><br><span class="line">    <span class="keyword">return</span> torch.bmm(softmax(torch.bmm(q, k.transpose(<span class="number">2</span>, <span class="number">1</span>)) / math.sqrt(d_k), dim=<span class="number">1</span>), v)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(attention(q, k, v))</span><br></pre></td></tr></table></figure>
+
+<center>
+    <img src="demo.png", width="80%">
+</center>
+
+<p>GPU works, have fun!</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/10/Jay-Resume/" rel="prev" title="Jay Resume">
+      <i class="fa fa-chevron-left"></i> Jay Resume
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Request-a-Virtual-Machine"><span class="nav-number">1.</span> <span class="nav-text">1. Request a Virtual Machine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-Expand-Individual-Quotas-Limitation"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 Expand Individual Quotas Limitation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-Request-a-VM-with-GPU"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 Request a VM with GPU</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Request-a-Virtual-Machine"><span class="nav-number">2.</span> <span class="nav-text">2. Request a Virtual Machine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Configure-the-Project-Dependencies"><span class="nav-number">3.</span> <span class="nav-text">3. Configure the Project Dependencies</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Remote-ssh-Configuration"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 Remote ssh Configuration</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-Online"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.2 Online</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3-Local"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.3 Local</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-Check-VM-Info"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 Check VM Info</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Pycharm-ssh-Python-Interpreter"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 Pycharm ssh Python Interpreter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Result"><span class="nav-number">4.</span> <span class="nav-text">4. Result</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jay Wang"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Jay Wang</p>
+  <div class="site-description" itemprop="description">This is a pure blog to record Mars' private projects, study summaries and career planning.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jay Wang</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
